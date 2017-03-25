@@ -38,20 +38,28 @@ void joystick_position(){
           }
     }
     
-  else if(xValue > 1020){
+   if(xValue > 1020){
+    if(yValue >501 && yValue<504){
       move_forward();
     }
+    }
     
-  else if(xValue<6){
-    move_down();
-    } 
+  if(xValue<6){
+    if(yValue> 479&&yValue<509)
+    {
+      move_down();
+    }
+   } 
     
-  else if(yValue<5){
+  if(yValue<5){
+    if(xValue >505 && xValue <595){
     move_left();
     }
- 
- else {
+  } 
+ if(xValue > 473&& xValue<508) {
+  if(yValue ==1023){
   move_right();
+ }
  }
 }
 
@@ -83,6 +91,3 @@ void move_down()
  Serial.print("Down ");
 joystick_position();
 }
-
-
-
