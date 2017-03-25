@@ -2,7 +2,7 @@
 #define STEP_MOTOR_PEN 10
 #define DIR_MOTOR_PLATE 11
 #define STEP_MOTOR_PLATE 12
-#define STEP_DURATION 2 //in ms
+#define STEP_DURATION 1 //in ms
 #define MOTOR_PLATE 2
 #define MOTOR_PEN 1
 
@@ -14,7 +14,12 @@ Servo myservo;
 int angle = 0;    
 int xPin = A1;
 int yPin = A0;
+int bPin = A5;
 int buttonPin = 13;
+
+int xDir = 0;
+int yDir = 0;
+int bValue = 0;
 
 int xPosition = 0;
 int yPosition = 0;
@@ -40,7 +45,7 @@ void setup() {
   Serial.begin(115200); 
   pinMode(xPin, INPUT);
   pinMode(yPin, INPUT);
-  pinMode(buttonPin, INPUT);
+  pinMode(bPin, INPUT);
   pinMode(DIR_MOTOR_PEN,OUTPUT);
   pinMode(STEP_MOTOR_PEN,OUTPUT);
   pinMode(DIR_MOTOR_PLATE,OUTPUT);
@@ -66,26 +71,68 @@ void print_joystick_position(int xValue,int yValue){
   
 void joystick_position(){
   xValue= analogRead(xPin);
-  delay(15);
   yValue = analogRead(yPin);
+  bValue = analogRead(bPin);
+  Serial.println(bValue);
+  
+  if(bValue < 100)
+        if(myservo.read() > 40)
+        myservo.write(20);
+        else 
+        myservo.write(50);
  
-  if((xValue>500 && xValue <520 ) && (yValue>500 && yValue<520)){
-    state = 0;
+  if((xValue>500 && xValue <525 ) && (yValue>500 && yValue<525)){
+    stepStop();
+               
+    } else if((xValue>500 && xValue <525 )){
+
+    if(yValue > 525){      
+        yValue = map(yValue,525,1023,20,1);
+        yDir = 1;
+      } else {
+        yValue = map(yValue,500,0,20,1);
+        yDir = 0;
+      }
+      
+      digitalWrite(STEP_MOTOR_PLATE, LOW);
+      stepMeHigh(STEP_MOTOR_PEN,yDir,yValue);
+
+    } else if((yValue>500 && yValue <525 )){
+      
+      if(xValue > 525){      
+        xValue = map(xValue,525,1023,20,1);
+        xDir = 1;
+      } else {
+        xValue = map(xValue,500,0,20,1);
+        xDir = 0;
+      }
+
+      digitalWrite(STEP_MOTOR_PEN, LOW);
+      stepMeHigh(STEP_MOTOR_PLATE,xDir,xValue);
+      
+    } else {
+
+      if(xValue > 525){      
+        xValue = map(xValue,525,1023,20,1);
+        xDir = 1;
+      } else {
+        xValue = map(xValue,500,0,20,1);
+        xDir = 0;
+      }
     
-          /* buttonState = digitalRead(buttonPin);
-            //Serial.println(buttonState);
-            if(buttonState == LOW) {
-              // delay(100);
-              //Serial.println("Clicked");
-              servo_move_down();
-              
-              }else{
-              //Serial.println("Button not moved");
-              servo_move_up();
-              } */
+      if(yValue > 525){      
+        yValue = map(yValue,525,1023,20,1);
+        yDir = 1;
+      } else {
+        yValue = map(yValue,500,0,20,1);
+        yDir = 0;
+      }
+      
+      stepMeHigh(STEP_MOTOR_PLATE,xDir,xValue);
+      stepMeHigh(STEP_MOTOR_PEN,yDir,yValue);   
     }
     
-    
+    /*
     if(xValue > 1010&&yValue >500 && yValue<510){    
       Serial.println("Down ");
       state = 1;
@@ -104,11 +151,13 @@ void joystick_position(){
       //stepMe(MOTOR_PEN,1);
     } 
       
-    if(xValue > 473&& xValue<508&&yValue >1010) {    
+    if(xValue > 473 && xValue<508 && yValue >1010) {    
       Serial.println("Left ");
       state = 4;
       //stepMe(MOTOR_PEN,0);
     }
+
+    
 
  switch(state){
     case 0: stepStop();
@@ -126,37 +175,13 @@ void joystick_position(){
     case 4: stepMeHigh(STEP_MOTOR_PEN,1);
             break;
  }
-}
 
-
-void joystick_move_forward(){
-  Serial.println("Forward ");
-  joystick_position();
-  
-}
-
-void joystick_move_left()
-{
- Serial.println("Left ");
- joystick_position();
-}
-
-void joystick_move_right()
-{
-  Serial.println("Right: ");
-  joystick_position();
-}
-
-void joystick_move_down()
-{
-  Serial.println("Down ");
-  joystick_position();
+ */
 }
 
 void servo_move_down(){
   for (pos = 90; pos >= 0; pos -= 1) { 
-    myservo.write(pos);              
-    delay(15);                       
+    myservo.write(pos);                    
   }
 }
 
@@ -164,18 +189,17 @@ void servo_move_up(){
   //servo goes up
   for(angle = 0; angle < 90; angle += 1)    
   {                                  
-    servo_test.write(angle);                 
-    delay(15);                       
+    servo_test.write(angle);                    
   } 
   //delay(1000);
 }
 
-void stepMeHigh(int motor, int dir) { 
+void stepMeHigh(int motor, int dir, int del) { 
   //1 - motor pen, 2 - motor plate // 0 - left, 1 - right //
   digitalWrite(DIR_MOTOR_PLATE, dir);
   digitalWrite(DIR_MOTOR_PEN, dir);
   digitalWrite(motor, HIGH);
-  delay(STEP_DURATION*5);
+  delay(del);
   digitalWrite(motor, LOW);
  }
 
@@ -183,18 +207,3 @@ void stepStop(){
   digitalWrite(STEP_MOTOR_PEN, LOW);
   digitalWrite(STEP_MOTOR_PLATE, LOW);
 }
-
- void stepMe(int motor, int dir) { 
-  //1 - motor pen, 2 - motor plate // 0 - left, 1 - right // 
-  if(motor == 1) { // motor pen
-      digitalWrite(DIR_MOTOR_PEN, dir);
-      digitalWrite(STEP_MOTOR_PEN, HIGH);
-      delay(STEP_DURATION*5);
-      digitalWrite(STEP_MOTOR_PEN, LOW);
-  } else { 
-    digitalWrite(DIR_MOTOR_PLATE, dir);
-      digitalWrite(STEP_MOTOR_PLATE, HIGH);
-      delay(STEP_DURATION*5);
-      digitalWrite(STEP_MOTOR_PLATE, LOW);
-  }
- }
