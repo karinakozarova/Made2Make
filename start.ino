@@ -2,6 +2,7 @@
 #include <Servo.h> 
  
 Servo servo_test; 
+Servo myservo;
                 
 int angle = 0;    
 int xPin = A1;
@@ -11,7 +12,8 @@ int buttonPin = 13;
 int xPosition = 0;
 int yPosition = 0;
 int buttonState = 0;
-int servo_up = 0;
+//int servo_up = 0;
+int pos = 0;
 
 void joystick_position();
 void joystick_move_forward();
@@ -21,13 +23,15 @@ void joystick_move_down();
 void print_joystick_position(int xValue,int yValue);
 void servo_move_up();
 void servo_move_down();
-void joystick_onclick();
+
+
 
 void setup() {
   Serial.begin(9600); 
   pinMode(xPin, INPUT);
   pinMode(yPin, INPUT);
   pinMode(buttonPin, INPUT);
+   myservo.attach(6); 
 }
 
 void loop() {
@@ -52,10 +56,14 @@ void joystick_position(){
             if(buttonState == LOW) {
                delay(1000);
               Serial.println("Clicked");
-              joystick_onclick();
+              servo_move_down();
+              
+              }else{
+              Serial.println("Button not moved");
+              servo_move_up();
               }
-            else Serial.println("Button not moved");
-    }
+            }
+    
     
    if(xValue > 1020&&yValue >501 && yValue<504){
       joystick_move_forward();
@@ -70,9 +78,9 @@ void joystick_position(){
   } 
  if(xValue > 473&& xValue<508&&yValue ==1023) {
       joystick_move_right();
- }
+  }
+ 
 }
-
 void joystick_move_forward(){
   Serial.println("Forward ");
   joystick_position();
@@ -92,7 +100,12 @@ void joystick_move_down()
   Serial.println("Down ");
   joystick_position();
 }
-
+void servo_move_down(){
+  for (pos = 90; pos >= 0; pos -= 1) { 
+    myservo.write(pos);              
+    delay(15);                       
+  }
+}
 void servo_move_up(){
   //servo goes up
   for(angle = 0; angle < 90; angle += 1)    
@@ -102,19 +115,5 @@ void servo_move_up(){
   } 
   delay(1000);
 }
-void servo_move_down(){
-  //servo goes down
-  for(angle = 90; angle>=1; angle-=5)    
-  {                                
-    servo_test.write(angle);              
-    delay(5);                       
-  } 
-  delay(1000);
-  servo_up = 0;
-  }
- void joystick_onclick(){
-  if(servo_up == 1){
-    servo_move_down();
-    }
-  else servo_move_up();
-  }
+
+ 
