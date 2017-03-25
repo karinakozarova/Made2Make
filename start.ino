@@ -1,3 +1,4 @@
+
 #include <Servo.h> 
  
 Servo servo_test; 
@@ -5,7 +6,7 @@ Servo servo_test;
 int angle = 0;    
 int xPin = A1;
 int yPin = A0;
-int buttonPin = 12;
+int buttonPin = 13;
 
 int xPosition = 0;
 int yPosition = 0;
@@ -36,22 +37,24 @@ void loop() {
 void print_joystick_position(int xValue,int yValue){
   Serial.print("X: ");
   Serial.print(xValue);
-  delay(250);
+  delay(1000);
   Serial.print("Y: ");
   Serial.println(yValue);
-  delay(250);
+  delay(1000);
   }
 void joystick_position(){
   int xValue=analogRead(xPin);
   int yValue=analogRead(yPin);
  
   if(xValue==507&&(yValue==504 || yValue==505 || yValue==503)){
-            buttonState = digitalRead(buttonPin);
-            if (buttonState == HIGH) {
+           buttonState = digitalRead(buttonPin);
+            Serial.println(buttonState);
+            if(buttonState == LOW) {
+               delay(1000);
+              Serial.println("Clicked");
               joystick_onclick();
               }
             else Serial.println("Button not moved");
-            
     }
     
    if(xValue > 1020&&yValue >501 && yValue<504){
@@ -110,6 +113,8 @@ void servo_move_down(){
   servo_up = 0;
   }
  void joystick_onclick(){
-  if(servo_up==1){servo_move_down();}
+  if(servo_up == 1){
+    servo_move_down();
+    }
   else servo_move_up();
   }
