@@ -15,12 +15,12 @@ int angle = 0;
 int down = 0;
 int xPin = A1;
 int yPin = A0;
-int bPin = 2;
-int buttonPin = 13;
+int bPin = A5;
  
 int xDir = 0;
 int yDir = 0;
 int bValue = 0;
+int sValue = 0;
  
 int xPosition = 0;
 int yPosition = 0;
@@ -34,13 +34,6 @@ int yValue = 0;
 int state = 0;
  
 void joystick_position();
-void joystick_move_forward();
-void joystick_move_left();
-void joystick_move_right();
-void joystick_move_down();
-void print_joystick_position(int xValue,int yValue);
-void servo_move_up();
-void servo_move_down();
  
 void setup() {
   Serial.begin(115200);
@@ -52,37 +45,28 @@ void setup() {
   pinMode(STEP_MOTOR_PEN,OUTPUT);
   pinMode(DIR_MOTOR_PLATE,OUTPUT);
   pinMode(STEP_MOTOR_PLATE,OUTPUT);
-   myservo.attach(7);
-   myservo.write(28);
+   myservo.attach(6);
    Serial.println("Hello\n");
 }
  
 void loop() {
   joystick_position();
-  delay(10);
-  Serial.println("/n");
-  Serial.println(xValue);
-  Serial.println(yValue);
+  //delay(10);
+  //Serial.println("/n");
+  //Serial.println(xValue);
+  //Serial.println(yValue);
  
 }
  
 void joystick_position(){
   xValue= analogRead(xPin);
   yValue = analogRead(yPin);
-  bValue = digitalRead(bPin);
-  Serial.println(bValue);
-  /*
-  if(bValue == 1){
-    if(down){
-      myservo.write(28);
-      down = 0;
-      delay(250);
-    } else {
-      myservo.write(90);
-      down = 1;
-      delay(250);
-    }
-  } */
+  bValue = analogRead(bPin);
+  Serial.print(bValue);
+ 
+  sValue = map(bValue,0,1023,85,10);
+  myservo.write(sValue);
+ 
  
   if((xValue>490 && xValue <525 ) && (yValue>490 && yValue<525)){
     stepStop();
