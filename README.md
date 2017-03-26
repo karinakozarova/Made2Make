@@ -1,7 +1,7 @@
-# Made2Make
+<img src ="https://github.com/karinakozarova/Made2Make/blob/master/M2M_black.jpg" alt = "black-logo"> 
+
 
 Това е проектът ни за ученическото състезание HackTUES 3. Идеята започна като робот, който да ни пише домашни по специалните предмети, за които трябва да рисуваме схеми. Засега Made2Make може да рисува в четирите посоки и да прави диагонал. Кодът е базиран на Ардуино. За хардуерната част ползваме 2 CD драйва, контролер Arduino Uno, микросерво SG90 и джойстик, чрез който управляваме движението. Единия CD драйвер се ползва за местене по X, а другия - за местене по Y. Сервото го ползваме за вдигане и поставяне на писеца, с който рисуваме.
 
-<img src ="https://github.com/karinakozarova/Made2Make/blob/master/M2M_black.jpg" alt = "black-logo"> 
 
 <a href="https://ibb.co/jOoVmF"><img src="https://image.ibb.co/fGugtv/17547693_1304806692943184_748498331_o.jpg" alt="17547693_1304806692943184_748498331_o" border="0"></a>
